@@ -24,8 +24,7 @@ my $tmpl = q(c:\webLog.tmpl);
 my @logData=();
 if ($log)
 {
-  open(FILE, $log) or die print "Can't open file:
-$!\n";
+  open(FILE, $log) or die print "Can't open file: $!\n";
   @logData = <FILE>;
   close(FILE);
 }
@@ -57,9 +56,9 @@ foreach my $line (@logData)
 
         #load array data into an AoH
         push @nData,{date  => $data[0],
-                      time  => $data[1],
-                      user  => $data[3],
-                      query => $data[8]};
+                     time  => $data[1],
+                     user  => $data[3],
+                     query => $data[8]};
 
         #get counts from query string
         $data[8] !~ /foo/ ? $query++ : $query;
@@ -80,12 +79,13 @@ my %active=activeUser(@users);
 #into a new array and take the first element as
 #the most active user
 my @activeUser=();
-foreach my $u (sort {$active{$b} <=> $active{$a}} keys
-%active)
+
+foreach my $u (sort {$active{$b} <=> $active{$a}} keys %active)
 {
   my $user="$u ($active{$u})";
   push(@activeUser,$user);
 }
+
 my $activ=$activeUser[0];
 
 #get number of unique users
@@ -97,45 +97,30 @@ useTemplate($date,$hits,$query,$batch,$excel,$error,$users,$activ,$app,@nData);
 
 sub useTemplate
 {
- 
-my($date,$hits,$query,$batch,$excel,$error,$users,$activ,$app,@nData)
-= @_;
+   my($date,$hits,$query,$batch,$excel,$error,$users,$activ,$app,@nData) = @_;
 
-  my @html = getTemplate($tmpl);
+   my @html = getTemplate($tmpl);
 
-  foreach my $line (@html)
-  {
-      if    ($line=~/<!--date-->/)  { $line .=
-qq($date);  }
-      elsif ($line=~/<!--hits-->/)  { $line .=
-qq($hits);  }
-      elsif ($line=~/<!--query-->/) { $line .=
-qq($query); }
-      elsif ($line=~/<!--batch-->/) { $line .=
-qq($batch); }
-      elsif ($line=~/<!--excel-->/) { $line .=
-qq($excel); }
-      elsif ($line=~/<!--error-->/) { $line .=
-qq($error); }
-      elsif ($line=~/<!--users-->/) { $line .=
-qq($users); }
-      elsif ($line=~/<!--activ-->/) { $line .=
-qq($activ)||'n/a'; }
-      elsif ($line=~/<!--app-->/)  { $line .=
-qq($app);  }
+   foreach my $line (@html)
+   {
+      if    ($line=~/<!--date-->/)  { $line .= qq($date);  }
+      elsif ($line=~/<!--hits-->/)  { $line .= qq($hits);  }
+      elsif ($line=~/<!--query-->/) { $line .= qq($query); }
+      elsif ($line=~/<!--batch-->/) { $line .= qq($batch); }
+      elsif ($line=~/<!--excel-->/) { $line .= qq($excel); }
+      elsif ($line=~/<!--error-->/) { $line .= qq($error); }
+      elsif ($line=~/<!--users-->/) { $line .= qq($users); }
+      elsif ($line=~/<!--activ-->/) { $line .= qq($activ)||'n/a'; }
+      elsif ($line=~/<!--app-->/)  { $line .= qq($app);  }
       elsif ($line=~/<!--logData-->/)
       {
         for my $i (0..$#nData)
         {
             $line .= qq(<tr>
-                        <td><font
-size=1>$nData[$i]{date}</td>
-                        <td><font
-size=1>$nData[$i]{time}</td>
-                        <td><font
-size=2>$nData[$i]{user}</td>
-                        <td><font
-size=2>$nData[$i]{query}</td>
+                        <td><font size=1>$nData[$i]{date}</td>
+                        <td><font size=1>$nData[$i]{time}</td>
+                        <td><font size=2>$nData[$i]{user}</td>
+                        <td><font size=2>$nData[$i]{query}</td>
                         </tr>);
         }
       } 
@@ -149,7 +134,7 @@ sub activeUser
   my %active=();
   foreach my $item (@users)
   {
-      $active{$item}++;
+     $active{$item}++;
   }
   return %active;
 }
@@ -161,15 +146,14 @@ sub uniqUsers
   my @uniq=(); 
   foreach my $item (@users)
   {
-      push(@uniq,$item) unless $seen{$item}++;
+     push(@uniq,$item) unless $seen{$item}++;
   }
   return @uniq;
 }
 
 sub getTemplate
 {
-  open(FILE, $tmpl) or die print "Can't open file:
-$!\n";
+  open(FILE, $tmpl) or die print "Can't open file: $!\n";
   my @html = <FILE>;
   close(FILE);
   return @html;
