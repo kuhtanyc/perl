@@ -34,14 +34,13 @@ print qq{Content-type: text/html\n\n};
 #-------------------------------------------------------
 my $allUserSql = qq(SELECT distinct a.user
                     FROM foo a,
-                        bar i
+                         bar i
                     WHERE
-upper(a.user)=upper(i.user(+))
+                         upper(a.user)=upper(i.user(+))
                     AND (i.user is null));
 
 #-------------------------------------------------------
-#The $getNewUsers sql statement is passed to
-getNewUsers
+#The $getNewUsers sql statement is passed to getNewUsers
 #which executes the query and returns the results to
 #@newUsers.
 #-------------------------------------------------------
@@ -77,8 +76,7 @@ unless ($insertUser==1)
 #-------------------------------------------------------
 #If the length of @newUsers is 0 then the following
 #message is displayed in the "Results Message"
-#of the html interface. showResults() opens the
-template
+#of the html interface. showResults() opens the template
 #file and places the message between the $tag value.
 #-------------------------------------------------------
 my $tag;
@@ -126,9 +124,7 @@ if ($insertUser == 1)
   insertUsers($insert,@newInfo);
 
   $tag = "<!--showMesg-->";
-  showResults($tmpl,$tag,"$aCount new users
-successfully added to
-database.");
+  showResults($tmpl,$tag,"$aCount new users successfully added to database.");
   exit;
 }
 
@@ -203,16 +199,12 @@ sub getDirectory(@)
   for my $i (0..$#ldapVars)
   {
       #connect to directory server
-      $ldap =
-Net::LDAP->new($ldapVars[$i]{server},version=>3)
-      or die print "unable to connect to
-$ldapVars[$i]{server}: $@";
+      $ldap = Net::LDAP->new($ldapVars[$i]{server},version=>3)
+      or die print "unable to connect to $ldapVars[$i]{server}: $@";
 
       #bind user dn and password to directory
-   
-$ldap->bind($ldapVars[$i]{dn},password=>$ldapVars[$i]{pass})
-      or die print "unable to bind to
-$ldapVars[$i]{server}: $@";
+      $ldap->bind($ldapVars[$i]{dn},password=>$ldapVars[$i]{pass})
+      or die print "unable to bind to $ldapVars[$i]{server}: $@";
   }
   my $mesg;
   my @dirInfo;
@@ -220,8 +212,7 @@ $ldapVars[$i]{server}: $@";
   for my $i (0..$#terms)
   {     
       $mesg = $ldap->search(base  => "dc=foo,dc=bar",
-                            filter =>
-"accountName=$terms[$i]{uid}"
+                            filter => "accountName=$terms[$i]{uid}"
                           );
 
       $mesg->code() && die $mesg->error;
@@ -231,12 +222,9 @@ $ldapVars[$i]{server}: $@";
       {
         my $entry = $mesg->entry($i);
 
-        push @dirInfo,{uid  =>
-$entry->get_value('accountName'),
-                        cn  =>
-$entry->get_value('cn'),
-                        dn  =>
-$entry->get_value('distinguishedName')
+        push @dirInfo,{uid  => $entry->get_value('accountName'),
+                        cn  => $entry->get_value('cn'),
+                        dn  => $entry->get_value('distinguishedName')
                       };
       }
 
@@ -287,8 +275,7 @@ sub getNewUsers($)
 
   my $sth = doPrepare($sql,$sqlName);
 
-  $sth->execute || die showError($sql,"Get New
-Users");
+  $sth->execute || die showError($sql,"Get New Users");
   while (my @row = $sth->fetchrow_array)
   {
       push @newUsers,{uid => $row[0]}
@@ -363,15 +350,13 @@ sub useTemplate($$$@)
 {
   my($tmpl,$tag,$mesg,@data) = @_;
 
-  open(FILE, $tmpl) or die print "Can't open file:
-$!\n";
+  open(FILE, $tmpl) or die print "Can't open file: $!\n";
 
   my @html = <FILE>;
 
   foreach my $line (@html)
   {
-      $line =~ /<!--showMesg-->/ ? print "$mesg\n" :
-undef;
+      $line =~ /<!--showMesg-->/ ? print "$mesg\n" : undef;
 
       if($line=~/$tag/)
       {
@@ -382,13 +367,9 @@ undef;
             my $select_user;
             my $select_admin;
             my $checked = "checked";
-            $data[$i]{dn} eq 'foo' ? $color="yellow" :
-$color;             
-            $data[$i]{dn} eq 'foo' ?
-$select_admin="selected" :
-$select_user="selected";
-            $data[$i]{dn} eq 'foo' ? $checked="" :
-$checked;
+            $data[$i]{dn} eq 'foo' ? $color="yellow" : $color;             
+            $data[$i]{dn} eq 'foo' ? $select_admin="selected" : $select_user="selected";
+            $data[$i]{dn} eq 'foo' ? $checked="" : $checked;
 
             unless ($data[$i]{uid} eq '')
             {
@@ -400,21 +381,15 @@ $checked;
                 <td>
                 <center>
                 <select name="role_$num">
-                  <option value="User"
-$select_user>User</option>
-                  <option value="Admin"
-$select_admin>Admin</option>
-                  <option
-value="Support">Support</option>
-                  <option
-value="Training">Training</option>
+                  <option value="User" $select_user>User</option>
+                  <option value="Admin" $select_admin>Admin</option>
+                  <option value="Support">Support</option>
+                  <option value="Training">Training</option>
                 </select>
                 </td>
                 <td>
                 <center>
-                <input name="report_$num"
-type="checkbox" value="yes"
-$checked>
+                <input name="report_$num" type="checkbox" value="yes" $checked>
                 </td>
               </tr>\n);
             }
@@ -459,10 +434,8 @@ sub showResults($$;$)
 
   foreach my $line (@html)
   {
-      $line =~ /<!--showMesg-->/ ? $line .= "$mesg\n"
-: undef;
-      $line =~ /<!--showTable-->/ ? $line .= "<!--\n"
-: undef;
+      $line =~ /<!--showMesg-->/ ? $line .= "$mesg\n" : undef;
+      $line =~ /<!--showTable-->/ ? $line .= "<!--\n" : undef;
       $line =~ /<\/html>/ ? $line .= "-->\n" : undef;
       print "$line";
   }
@@ -493,8 +466,7 @@ sub doPrepare($$)
 {
   my($sql,$sqlName) = @_;
   my $sth = foo::bar($sqlName,$sql)
-      or die print "Prepare failed,
-$DBI::errstr\n$sql\n"; 
+      or die print "Prepare failed, $DBI::errstr\n$sql\n"; 
   return $sth;
 }
 
@@ -523,9 +495,7 @@ n/a
 sub showError($$)
 {
   my($sql,$desc) = @_;
-  print qq(<b>Program Error - [Function:
-$desc]</b><br>
-            Could not execute SQL statement: $sql);
+  print qq(<b>Program Error - [Function: $desc]</b><br>Could not execute SQL statement: $sql);
 }
 
 #######################################################
@@ -564,8 +534,7 @@ sub auditLog($$@)
   my $sec = $tm -> sec;
 
   print FILE "$log [$m/$d/$y - $hr:$min:$sec]\n";
-  print FILE
-"---------------------------------------\n";
+  print FILE "---------------------------------------\n";
 
   if ($log eq 'New_User_Query')
   {
@@ -578,16 +547,14 @@ sub auditLog($$@)
   {
       for my $i (0..$#data)
       {
-        print FILE
-"$data[$i]{uid}|$data[$i]{cn}|$data[$i]{dn}\n";
+        print FILE "$data[$i]{uid}|$data[$i]{cn}|$data[$i]{dn}\n";
       }
   } 
   elsif ($log eq 'Insert_New_Users')
   {
       for my $i (0..$#data)
       {
-        print FILE
-"$data[$i]{uid}|$data[$i]{cn}|$data[$i]{oc}|$data[$i]{role}|$data[$i]{rep}\n";
+        print FILE "$data[$i]{uid}|$data[$i]{cn}|$data[$i]{oc}|$data[$i]{role}|$data[$i]{rep}\n";
       }
   }
   print FILE "\n";
