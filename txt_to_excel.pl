@@ -64,7 +64,6 @@ sub excelFormat() {
       #write each row to the worksheet
       foreach($line)
       {
-
          #perform regexes on $name to eliminate specified strings;
          #eliminate instances of "n/a","na","unknown","not known",
          $name =~ s/na//g;
