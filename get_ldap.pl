@@ -13,8 +13,7 @@ use gblconfig;
 use Net::LDAP;
 
 my $user=$ARGV[0] or die
-  "\nusage: perl quickLDAP.pl [user_name]
-[attribute]\n";
+  "\nusage: perl quickLDAP.pl [user_name] [attribute]\n";
 
 my $value=$ARGV[1];
 
@@ -42,21 +41,16 @@ sub LDAPConn($@)
   for my $i (0..$#ldapVars)
   {
       #connect to directory server
-      $ldap =
-Net::LDAP->new($ldapVars[$i]{server},version=>3)
-      or die "unable to connect to
-$ldapVars[$i]{server}: $@";
+      $ldap = Net::LDAP->new($ldapVars[$i]{server},version=>3)
+      or die "unable to connect to $ldapVars[$i]{server}: $@";
 
       #bind user dn and password to directory
-   
-$ldap->bind($ldapVars[$i]{dn},password=>$ldapVars[$i]{pass})
-      or die "unable to bind to $ldapVars[$i]{server}:
-$@";
+      $ldap->bind($ldapVars[$i]{dn},password=>$ldapVars[$i]{pass})
+      or die "unable to bind to $ldapVars[$i]{server}: $@";
   }
 
   my $mesg = $ldap->search(base  => "dc=foo,dc=bar",
-                            filter =>
-"sAMAccountName=$user"
+                           filter => "sAMAccountName=$user"
                           );
 
   $mesg->code() && die $mesg->error;
@@ -81,18 +75,23 @@ sub getDirectory($;$)
  
       if ($value ne '')
       {
-        push @dirInfo,{attr =>
-$entry->get_value($value)};
-        print"\n";
-        for my $i (0..$#dirInfo){print"$value :
-$dirInfo[$i]{attr}\n";}
+         push @dirInfo,{attr => $entry->get_value($value)};
+        
+	 print"\n";
+        
+	 for my $i (0..$#dirInfo) 
+	 {
+	    print"$value :
+	    $dirInfo[$i]{attr}\n";
+         }
       }
-      else {
-        foreach my $attr ($entry->attributes)
-        {
+      else 
+      {
+         foreach my $attr ($entry->attributes)
+         {
             my @values=$entry->get($attr);
             print"$attr : @values\n";
-        }
+         }
       }
-  }
+   }
 }
